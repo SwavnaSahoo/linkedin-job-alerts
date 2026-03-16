@@ -1,28 +1,20 @@
- name: LinkedIn Job Alert
-
+name: LinkedIn Job Alert
 on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
-
 jobs:
   run-alert:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install dependencies
         run: pip install feedparser
-
       - name: Restore seen jobs cache
         uses: actions/cache@v4
         with:
@@ -30,7 +22,6 @@ jobs:
           key: seen-jobs-${{ github.run_id }}
           restore-keys: |
             seen-jobs-
-
       - name: Run job alert script
         env:
           EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
@@ -39,7 +30,6 @@ jobs:
           SMTP_HOST: smtp.gmail.com
           SMTP_PORT: "587"
         run: python job_alert.py
-
       - name: Save seen jobs cache
         uses: actions/cache/save@v4
         if: always()
