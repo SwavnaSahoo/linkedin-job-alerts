@@ -1,10 +1,10 @@
 # 🔔 LinkedIn Job Alert — GitHub Actions
 
-Automatically checks LinkedIn for new job postings every **30 minutes** and sends you an email when new listings appear.
+Automatically checks LinkedIn for new job postings every **15 minutes** and sends you an email when new listings appear.
 
 ## What It Tracks
 
-**Roles:** Data Analyst · People Analyst · Product Manager · Business Analytics · Data Analyst Intern
+**Roles:** Data Analyst · People Analyst · Product Manager · Business Analytics · Data Analyst Intern · Product Management Intern
 
 **Locations:** Buffalo NY · Rochester NY · Atlanta GA · San Diego CA · Puerto Rico
 
