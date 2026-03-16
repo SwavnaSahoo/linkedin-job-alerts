@@ -16,13 +16,16 @@ JOB_SEARCHES = [
     # (keyword, location_id, location_label)
     # Buffalo, NY
     ("data analyst", "103783015", "Buffalo, NY"),
+    ("marketing analytics intern" , "103783015", "Buffalo, NY"),
     ("people analyst", "103783015", "Buffalo, NY"),
     ("product manager", "103783015", "Buffalo, NY"),
+    ("pproduct management intern", "103783015", "Buffalo, NY"),
     ("business analytics", "103783015", "Buffalo, NY"),
     ("data analyst intern", "103783015", "Buffalo, NY"),
 
     # Rochester, NY
     ("data analyst", "104377157", "Rochester, NY"),
+    ("marketing analytics intern" , "104377157", "Rochester, NY"),
     ("people analyst", "104377157", "Rochester, NY"),
     ("product manager", "104377157", "Rochester, NY"),
     ("business analytics", "104377157", "Rochester, NY"),
@@ -30,24 +33,39 @@ JOB_SEARCHES = [
 
     # Atlanta, GA
     ("data analyst", "103516136", "Atlanta, GA"),
+    ("marketing analytics intern" ,  "103516136", "Atlanta, GA"),
     ("people analyst", "103516136", "Atlanta, GA"),
     ("product manager", "103516136", "Atlanta, GA"),
+    ("product management intern", "103516136", "Atlanta, GA"),
     ("business analytics", "103516136", "Atlanta, GA"),
     ("data analyst intern", "103516136", "Atlanta, GA"),
 
     # San Diego, CA
     ("data analyst", "104577020", "San Diego, CA"),
+    ("marketing analytics intern" ,"104577020", "San Diego, CA"),
     ("people analyst", "104577020", "San Diego, CA"),
     ("product manager", "104577020", "San Diego, CA"),
+    ("product management intern", "104577020", "San Diego, CA"),
     ("business analytics", "104577020", "San Diego, CA"),
     ("data analyst intern", "104577020", "San Diego, CA"),
 
     # Puerto Rico
     ("data analyst", "104746898", "Puerto Rico"),
+    ("marketing analytics intern" , "104746898", "Puerto Rico"),
     ("people analyst", "104746898", "Puerto Rico"),
     ("product manager", "104746898", "Puerto Rico"),
+    ("product management intern", "104746898", "Puerto Rico"),
     ("business analytics", "104746898", "Puerto Rico"),
     ("data analyst intern", "104746898", "Puerto Rico"),
+
+    # Washington DC
+    ("data analyst", "103977233", "Washington DC"),
+    ("marketing analytics intern" , "103977233", "Washington DC"),
+    ("people analyst", "103977233", "Washington DC"),
+    ("product manager", "103977233", "Washington DC"),
+    ("product management intern", "103977233", "Washington DC"),
+    ("business analytics", "103977233", "Washington DC"),
+    ("data analyst intern", "103977233", "Washington DC"),
 ]
 
 SEEN_JOBS_FILE = "seen_jobs.json"
