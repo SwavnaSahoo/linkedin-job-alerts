@@ -276,7 +276,19 @@ def send_email(jobs):
     smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
 
-    subject = f"🔔 {len(jobs)} New LinkedIn Job{'s' if len(jobs)!=1 else ''} — {datetime.now().strftime('%b %d, %I:%M %p')}"
+    subject_lines = [
+        f"Freshly brewed opportunities — {datetime.now().strftime('%b %d')}",
+        f"Your next chapter might be in here — {datetime.now().strftime('%b %d')}",
+        f"Hot off the feed — {datetime.now().strftime('%b %d')}",
+        f"Curated. Just for you. — {datetime.now().strftime('%b %d')}",
+        f"New doors, just opened — {datetime.now().strftime('%b %d')}",
+        f"The search continues, beautifully — {datetime.now().strftime('%b %d')}",
+        f"Something good this way comes — {datetime.now().strftime('%b %d')}",
+        f"Worth a look, Swavna — {datetime.now().strftime('%b %d')}",
+    ]
+    # Rotate based on 15-min intervals since midnight
+    interval = (datetime.now().hour * 60 + datetime.now().minute) // 15
+    subject = subject_lines[interval % len(subject_lines)]
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"]    = sender
