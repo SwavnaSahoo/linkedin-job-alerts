@@ -14,6 +14,15 @@ from pathlib import Path
 # CONFIGURATION
 # ─────────────────────────────────────────────
 
+# LinkedIn experience level codes for f_E parameter:
+# 1 = Internship, 2 = Entry level, 3 = Associate, 4 = Mid-Senior, 5 = Director, 6 = Executive
+EXPERIENCE_LEVELS = [
+    ("1", "Internship"),
+    ("2", "Entry Level"),
+    ("3", "Associate"),
+    ("4", "Mid-Senior"),
+]
+
 JOB_SEARCHES = [
     # (keyword, location, location_label)
     # Buffalo, NY
@@ -71,12 +80,20 @@ HEADERS = {
     "Cache-Control": "max-age=0",
 }
 
+# Experience level badge colors in email
+LEVEL_COLORS = {
+    "Internship":  {"bg": "#e8f4fb", "text": "#005f8a"},
+    "Entry Level": {"bg": "#e6f9ee", "text": "#1a6e3c"},
+    "Associate":   {"bg": "#fff8e1", "text": "#7d5a00"},
+    "Mid-Senior":  {"bg": "#fce8f3", "text": "#8b1a5c"},
+}
+
 # ─────────────────────────────────────────────
 # HELPERS
 # ─────────────────────────────────────────────
 
-def job_id(title, company, location):
-    unique_str = f"{title}-{company}-{location}"
+def job_id(title, company, location, exp_level):
+    unique_str = f"{title}-{company}-{location}-{exp_level}"
     return hashlib.md5(unique_str.encode()).hexdigest()
 
 def load_seen_jobs():
@@ -93,7 +110,7 @@ def save_seen_jobs(seen):
 # JOB FETCHING
 # ─────────────────────────────────────────────
 
-def fetch_jobs_for_search(keyword, location, location_label, seen_jobs):
+def fetch_jobs_for_search(keyword, location, location_label, exp_code, exp_label, seen_jobs):
     new_jobs = []
     keyword_encoded = keyword.replace(" ", "%20")
     location_encoded = location.replace(" ", "%20").replace(",", "%2C")
@@ -103,6 +120,7 @@ def fetch_jobs_for_search(keyword, location, location_label, seen_jobs):
         f"keywords={keyword_encoded}"
         f"&location={location_encoded}"
         f"&f_TPR=r3600"
+        f"&f_E={exp_code}"
         f"&sortBy=DD"
         f"&position=1&pageNum=0"
     )
@@ -110,46 +128,42 @@ def fetch_jobs_for_search(keyword, location, location_label, seen_jobs):
     try:
         resp = requests.get(url, headers=HEADERS, timeout=15)
         if resp.status_code != 200:
-            print(f"[WARN] Status {resp.status_code} for '{keyword}' in {location_label}")
+            print(f"[WARN] Status {resp.status_code} for '{keyword}' ({exp_label}) in {location_label}")
             return new_jobs
 
         soup = BeautifulSoup(resp.text, "html.parser")
         job_cards = soup.find_all("div", class_="base-card")
 
-        if not job_cards:
-            # Try alternate card class
-            job_cards = soup.find_all("li", class_="jobs-search__results-list")
-
         for card in job_cards[:10]:
             try:
-                title_el = card.find("h3") or card.find("span", class_="sr-only")
-                company_el = card.find("h4") or card.find("a", {"data-tracking-control-name": "public_jobs_jserp-result_job-search-card-subtitle"})
-                link_el = card.find("a", href=True)
+                title_el  = card.find("h3")
+                company_el = card.find("h4")
+                link_el   = card.find("a", href=True)
 
-                title = title_el.get_text(strip=True) if title_el else "Unknown Title"
+                title   = title_el.get_text(strip=True)   if title_el   else "Unknown Title"
                 company = company_el.get_text(strip=True) if company_el else "Unknown Company"
-                link = link_el["href"] if link_el else "#"
+                link    = link_el["href"]                 if link_el    else "#"
 
-                # Clean link
                 if "?" in link:
                     link = link.split("?")[0]
 
-                jid = job_id(title, company, location_label)
+                jid = job_id(title, company, location_label, exp_label)
                 if jid not in seen_jobs:
                     new_jobs.append({
-                        "id": jid,
-                        "title": title,
-                        "company": company,
-                        "location": location_label,
-                        "link": link,
-                        "keyword": keyword,
+                        "id":        jid,
+                        "title":     title,
+                        "company":   company,
+                        "location":  location_label,
+                        "exp_level": exp_label,
+                        "link":      link,
+                        "keyword":   keyword,
                     })
                     seen_jobs.add(jid)
             except Exception as e:
                 print(f"[WARN] Error parsing card: {e}")
 
     except Exception as e:
-        print(f"[WARN] Failed to fetch '{keyword}' in {location_label}: {e}")
+        print(f"[WARN] Failed to fetch '{keyword}' ({exp_label}) in {location_label}: {e}")
 
     return new_jobs
 
@@ -157,16 +171,26 @@ def fetch_jobs_for_search(keyword, location, location_label, seen_jobs):
 def fetch_new_jobs(seen_jobs):
     all_new = []
     for keyword, location, location_label in JOB_SEARCHES:
-        jobs = fetch_jobs_for_search(keyword, location, location_label, seen_jobs)
-        if jobs:
-            print(f"[INFO] Found {len(jobs)} new jobs for '{keyword}' in {location_label}")
-        all_new.extend(jobs)
-        time.sleep(2)  # polite delay between requests
+        for exp_code, exp_label in EXPERIENCE_LEVELS:
+            jobs = fetch_jobs_for_search(keyword, location, location_label, exp_code, exp_label, seen_jobs)
+            if jobs:
+                print(f"[INFO] Found {len(jobs)} new '{exp_label}' jobs for '{keyword}' in {location_label}")
+            all_new.extend(jobs)
+            time.sleep(1)
     return all_new
 
 # ─────────────────────────────────────────────
 # EMAIL
 # ─────────────────────────────────────────────
+
+def exp_badge(exp_level):
+    colors = LEVEL_COLORS.get(exp_level, {"bg": "#f0f0f0", "text": "#555"})
+    return (
+        f'<span style="display:inline-block;padding:2px 8px;border-radius:3px;'
+        f'background:{colors["bg"]};color:{colors["text"]};'
+        f'font-size:11px;font-weight:600;margin-left:8px;">'
+        f'{exp_level}</span>'
+    )
 
 def build_email_html(jobs):
     by_location = {}
@@ -180,9 +204,12 @@ def build_email_html(jobs):
     for location, loc_jobs in sorted(by_location.items()):
         job_cards = ""
         for job in loc_jobs:
+            badge = exp_badge(job.get("exp_level", ""))
             job_cards += f"""
             <div style="background:#f9f9f9;border-left:4px solid #0077b5;padding:14px 16px;margin-bottom:12px;border-radius:4px;">
-              <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px;">{job['title']}</div>
+              <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">
+                {job['title']}{badge}
+              </div>
               <div style="font-size:13px;color:#555;margin-bottom:10px;">{job['company']} &nbsp;·&nbsp; {job['location']}</div>
               <a href="{job['link']}" style="display:inline-block;background:#0077b5;color:#fff;text-decoration:none;padding:7px 16px;border-radius:4px;font-size:13px;font-weight:600;">View Job →</a>
             </div>
@@ -204,7 +231,8 @@ def build_email_html(jobs):
         </div>
         <div style="background:#e8f4fb;padding:12px 20px;font-size:13px;color:#005f8a;margin-bottom:28px;">
           🎯 <strong>Data Analyst · People Analyst · Product Manager · Business Analytics · Internships</strong><br>
-          📌 Buffalo · Rochester · Atlanta · San Diego · Puerto Rico · Washington DC
+          📌 Buffalo · Rochester · Atlanta · San Diego · Puerto Rico · Washington DC<br>
+          🏷️ Levels: <strong>Internship · Entry Level · Associate · Mid-Senior</strong>
         </div>
         {sections}
         <div style="border-top:1px solid #e5e5e5;padding-top:18px;font-size:12px;color:#aaa;text-align:center;">
