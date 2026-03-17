@@ -3,26 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JobPing — LinkedIn Job Alerts</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <title>JobPing by Swavna</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Geist:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0f;
-      --surface: #13131a;
-      --surface2: #1c1c27;
-      --border: rgba(255,255,255,0.07);
-      --border-active: rgba(99,179,237,0.4);
-      --text: #f0f0f5;
-      --muted: #8888a0;
-      --accent: #63b3ed;
-      --accent2: #9f7aea;
-      --success: #68d391;
-      --pill-bg: rgba(99,179,237,0.1);
-      --pill-text: #90cdf4;
-      --tag-bg: rgba(159,122,234,0.12);
-      --tag-text: #c4b5fd;
+      --bg: #faf9f6;
+      --bg2: #f3f1ec;
+      --surface: #ffffff;
+      --border: #e8e4de;
+      --border-dark: #cdc8c0;
+      --text: #1a1916;
+      --muted: #8c877e;
+      --faint: #b5b0a8;
+      --accent: #c17f3e;
+      --accent-light: #f5ede0;
+      --accent-mid: #e8c99a;
+      --tag-bg: #f0ede7;
+      --tag-active-bg: #1a1916;
+      --tag-active-text: #faf9f6;
+      --loc-active-bg: #c17f3e;
+      --loc-active-text: #fff;
     }
 
     html { scroll-behavior: smooth; }
@@ -30,419 +32,341 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
+      font-family: 'Geist', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
       min-height: 100vh;
-      overflow-x: hidden;
     }
-
-    /* Background grid */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(99,179,237,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99,179,237,0.03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Glow orbs */
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.35;
-    }
-    .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #63b3ed33, transparent 70%); top: -100px; right: -100px; }
-    .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #9f7aea22, transparent 70%); bottom: 100px; left: -80px; }
 
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 20px 40px;
+      padding: 18px 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      backdrop-filter: blur(16px);
-      background: rgba(10,10,15,0.7);
+      background: rgba(250,249,246,0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
 
     .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 22px;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 400;
       color: var(--text);
-      letter-spacing: -0.5px;
+      font-style: italic;
+      letter-spacing: 0.01em;
+    }
+
+    .logo span { font-style: normal; font-weight: 500; color: var(--accent); }
+
+    .nav-right {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 140px 48px 64px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.1s forwards;
+    }
+
+    .byline {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .logo-dot {
-      width: 8px; height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
-    .nav-badge {
-      font-size: 12px;
-      padding: 4px 12px;
-      background: var(--pill-bg);
-      color: var(--pill-text);
-      border: 1px solid rgba(99,179,237,0.2);
-      border-radius: 999px;
-      font-weight: 500;
-    }
-
-    main {
-      position: relative;
-      z-index: 1;
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 140px 24px 80px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: fadeUp 0.5s 0.1s forwards;
-    }
-
-    .eyebrow-line {
-      width: 24px; height: 1px;
-      background: var(--accent);
+    .byline::after {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: var(--accent-mid);
     }
 
     h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(38px, 6vw, 58px);
-      font-weight: 800;
-      line-height: 1.08;
-      letter-spacing: -2px;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(40px, 5.5vw, 62px);
+      font-weight: 400;
+      line-height: 1.12;
+      letter-spacing: -0.5px;
       color: var(--text);
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: fadeUp 0.5s 0.2s forwards;
+      margin-bottom: 24px;
     }
 
-    h1 span {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+    h1 em { font-style: italic; color: var(--accent); }
 
-    .subtitle {
-      font-size: 17px;
+    .hero-sub {
+      font-size: 16px;
       color: var(--muted);
       font-weight: 300;
-      margin-bottom: 40px;
-      line-height: 1.7;
-      opacity: 0;
-      animation: fadeUp 0.5s 0.3s forwards;
+      max-width: 480px;
+      line-height: 1.8;
+      margin-bottom: 36px;
     }
 
-    .stats-row {
+    .hero-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .hero-note::before { content: '✦'; font-size: 10px; }
+
+    .section-divider {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 48px;
       display: flex;
-      gap: 24px;
+      align-items: center;
+      gap: 16px;
       margin-bottom: 48px;
       opacity: 0;
-      animation: fadeUp 0.5s 0.4s forwards;
+      animation: fadeUp 0.7s 0.25s forwards;
     }
 
-    .stat {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
+    .sdl { flex: 1; height: 1px; background: var(--border); }
+    .sdt {
+      font-size: 11px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-divider {
-      width: 1px;
-      background: var(--border);
-      align-self: stretch;
-    }
-
-    /* Form card */
-    .form-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 36px;
-      opacity: 0;
-      animation: fadeUp 0.5s 0.5s forwards;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .form-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.5;
-    }
-
-    .form-section {
-      margin-bottom: 28px;
-    }
-
-    .form-label {
-      font-size: 13px;
+      color: var(--faint);
       font-weight: 500;
-      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .form-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s forwards;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .form-block { display: flex; flex-direction: column; gap: 12px; }
+    .form-block.full { grid-column: 1 / -1; }
+
+    .form-block-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 12px;
-      display: block;
+      color: var(--muted);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
     }
 
     .form-input {
       width: 100%;
-      background: var(--surface2);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 16px;
+      border-radius: 6px;
+      padding: 12px 14px;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s;
     }
 
-    .form-input:focus {
-      border-color: var(--border-active);
-      box-shadow: 0 0 0 3px rgba(99,179,237,0.08);
-    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--faint); }
 
-    .form-input::placeholder { color: #444460; }
-
-    /* Tag selector */
-    .tag-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
 
     .tag {
-      padding: 7px 14px;
-      border-radius: 999px;
+      padding: 5px 12px;
+      border-radius: 3px;
       border: 1px solid var(--border);
-      background: var(--surface2);
+      background: var(--tag-bg);
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
       cursor: pointer;
       transition: all 0.15s;
       user-select: none;
     }
 
-    .tag:hover {
-      border-color: rgba(99,179,237,0.3);
-      color: var(--text);
-    }
+    .tag:hover { border-color: var(--border-dark); color: var(--text); }
+    .tag.active { background: var(--tag-active-bg); border-color: var(--tag-active-bg); color: var(--tag-active-text); }
+    .tag.loc.active { background: var(--loc-active-bg); border-color: var(--loc-active-bg); color: var(--loc-active-text); }
 
-    .tag.selected {
-      background: var(--pill-bg);
-      border-color: rgba(99,179,237,0.35);
-      color: var(--pill-text);
-    }
-
-    .tag.selected.location {
-      background: var(--tag-bg);
-      border-color: rgba(159,122,234,0.3);
-      color: var(--tag-text);
-    }
-
-    /* Custom keyword input */
-    .custom-input-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .custom-input-row .form-input {
-      flex: 1;
-    }
+    .custom-row { display: flex; gap: 6px; margin-top: 4px; }
+    .custom-row .form-input { flex: 1; padding: 8px 12px; font-size: 13px; }
 
     .add-btn {
-      padding: 13px 18px;
-      background: var(--surface2);
+      padding: 8px 14px;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 6px;
+      background: var(--surface);
       color: var(--muted);
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
       transition: all 0.15s;
       line-height: 1;
     }
 
-    .add-btn:hover {
-      border-color: rgba(99,179,237,0.3);
-      color: var(--accent);
-    }
+    .add-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* Frequency selector */
-    .freq-row {
-      display: flex;
-      gap: 8px;
-    }
+    .freq-row { display: flex; gap: 6px; flex-wrap: wrap; }
 
     .freq-btn {
-      flex: 1;
-      padding: 10px;
-      background: var(--surface2);
+      padding: 6px 14px;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 3px;
+      background: var(--tag-bg);
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
+      font-family: 'Geist', sans-serif;
       cursor: pointer;
       transition: all 0.15s;
-      text-align: center;
     }
 
-    .freq-btn:hover { border-color: rgba(99,179,237,0.3); color: var(--text); }
-    .freq-btn.selected {
-      background: var(--pill-bg);
-      border-color: rgba(99,179,237,0.35);
-      color: var(--pill-text);
-    }
+    .freq-btn:hover { border-color: var(--border-dark); color: var(--text); }
+    .freq-btn.active { background: var(--tag-active-bg); border-color: var(--tag-active-bg); color: var(--tag-active-text); }
 
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 28px 0;
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #63b3ed, #9f7aea);
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .submit-btn:active { transform: translateY(0); }
-
-    .submit-btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-    }
-
-    .fine-print {
-      text-align: center;
-      font-size: 12px;
-      color: #444460;
-      margin-top: 14px;
-    }
-
-    /* Success state */
-    .success-card {
-      display: none;
-      text-align: center;
-      padding: 48px 36px;
-    }
-
-    .success-icon {
-      width: 64px; height: 64px;
-      background: rgba(104,211,145,0.1);
-      border: 1px solid rgba(104,211,145,0.3);
-      border-radius: 50%;
+    .cta-row {
+      grid-column: 1 / -1;
       display: flex;
       align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 28px;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      gap: 24px;
+    }
+
+    .cta-note { font-size: 12px; color: var(--faint); font-weight: 300; line-height: 1.6; }
+
+    .submit-btn {
+      padding: 14px 32px;
+      background: var(--text);
+      border: none;
+      border-radius: 4px;
+      color: var(--bg);
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .submit-btn:hover { background: #2d2b27; transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+
+    .success-wrap {
+      display: none;
+      text-align: center;
+      padding: 64px 48px;
+    }
+
+    .success-mark {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      color: var(--accent);
+      margin-bottom: 16px;
+      font-style: italic;
     }
 
     .success-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
       color: var(--text);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
-    .success-desc {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.6;
+    .success-body { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.8; }
+
+    .about-strip {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 56px 48px;
     }
 
-    /* How it works */
-    .how-section {
-      margin-top: 80px;
-      opacity: 0;
-      animation: fadeUp 0.5s 0.7s forwards;
+    .about-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 48px;
+      align-items: start;
     }
 
-    .how-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
+    .about-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 24px;
+      color: var(--faint);
+      padding-top: 4px;
     }
 
-    .how-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
+    .about-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text);
     }
+
+    .about-text em { color: var(--accent); }
+
+    .about-sub {
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.7;
+    }
+
+    .how-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+
+    .how-header {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 32px;
+    }
+
+    .how-steps { display: flex; flex-direction: column; }
 
     .how-step {
-      display: flex;
+      display: grid;
+      grid-template-columns: 48px 1fr;
       gap: 20px;
       padding: 20px 0;
       border-bottom: 1px solid var(--border);
@@ -450,224 +374,204 @@
 
     .how-step:last-child { border-bottom: none; }
 
-    .how-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent);
-      min-width: 24px;
+    .how-n {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-style: italic;
+      color: var(--accent-mid);
       padding-top: 2px;
     }
 
-    .how-text strong {
-      display: block;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 3px;
-    }
-
-    .how-text span {
-      font-size: 13px;
-      color: var(--muted);
-    }
+    .how-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+    .how-desc { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.7; }
 
     footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 40px 24px;
-      font-size: 12px;
-      color: #333348;
       border-top: 1px solid var(--border);
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; color: var(--muted); }
+    .footer-right { font-size: 11px; color: var(--faint); font-weight: 300; }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(14px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 600px) {
-      nav { padding: 16px 20px; }
-      main { padding: 120px 16px 60px; }
-      .form-card { padding: 24px 20px; }
-      .stats-row { gap: 16px; }
-      h1 { letter-spacing: -1px; }
+    @media (max-width: 640px) {
+      nav { padding: 16px 24px; }
+      .hero, .form-wrap, .how-wrap { padding-left: 24px; padding-right: 24px; }
+      .section-divider { padding: 0 24px; }
+      .form-grid { grid-template-columns: 1fr; gap: 28px; }
+      .cta-row { flex-direction: column; align-items: stretch; }
+      .submit-btn { text-align: center; }
+      .about-inner { grid-template-columns: 1fr; gap: 16px; }
+      .about-strip { padding: 40px 24px; }
+      footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-
 <nav>
-  <div class="logo">
-    <div class="logo-dot"></div>
-    JobPing
-  </div>
-  <div class="nav-badge">Free · No account needed</div>
+  <div class="logo">Job<span>Ping</span></div>
+  <div class="nav-right">by Swavna Sahoo</div>
 </nav>
 
-<main>
-  <div class="eyebrow">
-    <div class="eyebrow-line"></div>
-    LinkedIn Job Alerts
-  </div>
+<section class="hero">
+  <div class="byline">Swavna built this</div>
+  <h1>Stop refreshing.<br>Start <em>landing.</em></h1>
+  <p class="hero-sub">I got tired of manually checking LinkedIn every day — so I built this. Enter your email, pick your roles and cities, and get notified the moment something new drops.</p>
+  <div class="hero-note">Checks LinkedIn every 15 minutes · Completely free</div>
+</section>
 
-  <h1>Never miss a<br><span>job opening</span><br>again.</h1>
+<div class="section-divider">
+  <div class="sdl"></div>
+  <div class="sdt">Set up your alert</div>
+  <div class="sdl"></div>
+</div>
 
-  <p class="subtitle">Get instant email alerts when new analyst, PM, and business roles are posted on LinkedIn — customized to your cities and keywords.</p>
+<div class="form-wrap">
+  <div id="formContent">
+    <div class="form-grid">
 
-  <div class="stats-row">
-    <div class="stat">
-      <div class="stat-num">15min</div>
-      <div class="stat-label">Check frequency</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num">6</div>
-      <div class="stat-label">Cities tracked</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num">Free</div>
-      <div class="stat-label">Always</div>
-    </div>
-  </div>
-
-  <div class="form-card" id="formCard">
-    <div id="formContent">
-
-      <!-- Email -->
-      <div class="form-section">
-        <label class="form-label">Your email</label>
+      <div class="form-block full">
+        <div class="form-block-label">Your email address</div>
         <input type="email" class="form-input" id="emailInput" placeholder="you@gmail.com" />
       </div>
 
-      <!-- Job keywords -->
-      <div class="form-section">
-        <label class="form-label">Job types</label>
-        <div class="tag-grid" id="roleGrid">
-          <div class="tag selected" data-role="data analyst">Data Analyst</div>
-          <div class="tag selected" data-role="people analyst">People Analyst</div>
-          <div class="tag selected" data-role="product manager">Product Manager</div>
-          <div class="tag selected" data-role="business analytics">Business Analytics</div>
-          <div class="tag selected" data-role="data analyst intern">Data Analyst Intern</div>
+      <div class="form-block">
+        <div class="form-block-label">Job roles</div>
+        <div class="tag-wrap" id="roleGrid">
+          <div class="tag active" data-role="data analyst">Data Analyst</div>
+          <div class="tag active" data-role="people analyst">People Analyst</div>
+          <div class="tag active" data-role="product manager">Product Manager</div>
+          <div class="tag active" data-role="business analytics">Business Analytics</div>
+          <div class="tag active" data-role="data analyst intern">Data Analyst Intern</div>
           <div class="tag" data-role="business analyst">Business Analyst</div>
           <div class="tag" data-role="product analyst">Product Analyst</div>
           <div class="tag" data-role="hr analyst">HR Analyst</div>
           <div class="tag" data-role="operations analyst">Operations Analyst</div>
         </div>
-        <div class="custom-input-row">
-          <input type="text" class="form-input" id="customRole" placeholder="Add custom keyword..." />
+        <div class="custom-row">
+          <input type="text" class="form-input" id="customRole" placeholder="Add your own..." />
           <button class="add-btn" onclick="addCustomRole()">+</button>
         </div>
       </div>
 
-      <!-- Locations -->
-      <div class="form-section">
-        <label class="form-label">Locations</label>
-        <div class="tag-grid" id="locationGrid">
-          <div class="tag location selected" data-loc="Buffalo, NY" data-id="103783015">Buffalo, NY</div>
-          <div class="tag location selected" data-loc="Rochester, NY" data-id="104377157">Rochester, NY</div>
-          <div class="tag location selected" data-loc="Atlanta, GA" data-id="103516136">Atlanta, GA</div>
-          <div class="tag location selected" data-loc="San Diego, CA" data-id="104577020">San Diego, CA</div>
-          <div class="tag location selected" data-loc="Puerto Rico" data-id="104746898">Puerto Rico</div>
-          <div class="tag location" data-loc="Washington DC" data-id="103977233">Washington DC</div>
-          <div class="tag location" data-loc="New York City" data-id="102571732">New York City</div>
-          <div class="tag location" data-loc="Chicago, IL" data-id="103112676">Chicago, IL</div>
-          <div class="tag location" data-loc="Remote" data-id="90000070">Remote</div>
-          <div class="tag location" data-loc="Boston, MA" data-id="101356976">Boston, MA</div>
+      <div class="form-block">
+        <div class="form-block-label">Locations</div>
+        <div class="tag-wrap" id="locationGrid">
+          <div class="tag loc active" data-loc="Buffalo, NY" data-id="103783015">Buffalo, NY</div>
+          <div class="tag loc active" data-loc="Rochester, NY" data-id="104377157">Rochester, NY</div>
+          <div class="tag loc active" data-loc="Atlanta, GA" data-id="103516136">Atlanta, GA</div>
+          <div class="tag loc active" data-loc="San Diego, CA" data-id="104577020">San Diego, CA</div>
+          <div class="tag loc active" data-loc="Puerto Rico" data-id="104746898">Puerto Rico</div>
+          <div class="tag loc" data-loc="Washington DC" data-id="103977233">Washington DC</div>
+          <div class="tag loc" data-loc="New York City" data-id="102571732">New York City</div>
+          <div class="tag loc" data-loc="Chicago, IL" data-id="103112676">Chicago, IL</div>
+          <div class="tag loc" data-loc="Remote" data-id="90000070">Remote</div>
+          <div class="tag loc" data-loc="Boston, MA" data-id="101356976">Boston, MA</div>
         </div>
       </div>
 
-      <!-- Frequency -->
-      <div class="form-section">
-        <label class="form-label">Alert frequency</label>
+      <div class="form-block full">
+        <div class="form-block-label">How often</div>
         <div class="freq-row">
-          <div class="freq-btn" data-freq="*/15 * * * *">Every 15 min</div>
-          <div class="freq-btn selected" data-freq="*/30 * * * *">Every 30 min</div>
+          <div class="freq-btn active" data-freq="*/15 * * * *">Every 15 min</div>
+          <div class="freq-btn" data-freq="*/30 * * * *">Every 30 min</div>
           <div class="freq-btn" data-freq="0 * * * *">Hourly</div>
-          <div class="freq-btn" data-freq="0 9 * * *">Daily 9am</div>
+          <div class="freq-btn" data-freq="0 9 * * *">Daily at 9am</div>
         </div>
       </div>
 
-      <div class="divider"></div>
+      <div class="cta-row">
+        <div class="cta-note">
+          No spam, ever. Unsubscribe anytime.<br>
+          Powered by LinkedIn RSS + GitHub Actions.
+        </div>
+        <button class="submit-btn" onclick="handleSubmit()">Subscribe →</button>
+      </div>
 
-      <button class="submit-btn" onclick="handleSubmit()">
-        Start getting alerts →
-      </button>
-      <p class="fine-print">No spam. Unsubscribe anytime. Powered by LinkedIn RSS feeds.</p>
-    </div>
-
-    <!-- Success state -->
-    <div class="success-card" id="successCard">
-      <div class="success-icon">✓</div>
-      <div class="success-title">You're all set!</div>
-      <p class="success-desc">Alerts are now active for your selected roles and locations.<br>Check your inbox — your first email will arrive within 30 minutes.</p>
     </div>
   </div>
 
-  <!-- How it works -->
-  <div class="how-section">
-    <div class="how-title">How it works</div>
-    <div class="how-steps">
-      <div class="how-step">
-        <div class="how-num">01</div>
-        <div class="how-text">
-          <strong>Pick your roles & cities</strong>
-          <span>Choose from preset options or add your own custom keywords.</span>
-        </div>
+  <div class="success-wrap" id="successCard">
+    <div class="success-mark">✦</div>
+    <div class="success-title">You're all set.</div>
+    <p class="success-body">Your first alert will arrive within 15 minutes.<br>Good luck out there — you've got this.</p>
+  </div>
+</div>
+
+<div class="about-strip">
+  <div class="about-inner">
+    <div class="about-label">Why I built this</div>
+    <div>
+      <div class="about-text">
+        I'm Swavna — a <em>people-focused</em> data person who believes the right opportunity changes everything.
       </div>
-      <div class="how-step">
-        <div class="how-num">02</div>
-        <div class="how-text">
-          <strong>We monitor LinkedIn RSS feeds</strong>
-          <span>Our system checks for new postings every 15–30 minutes automatically.</span>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">03</div>
-        <div class="how-text">
-          <strong>You get an instant email</strong>
-          <span>Only when new jobs appear — no noise, no repeats, just fresh listings.</span>
-        </div>
+      <div class="about-sub">
+        I built JobPing because job hunting is exhausting enough without having to manually refresh LinkedIn every hour. This tool checks for new analyst, PM, and business roles across my target cities every 15 minutes and sends a clean email the moment something new appears. Built with Python, GitHub Actions, and a lot of curiosity.
       </div>
     </div>
   </div>
-</main>
+</div>
+
+<div class="how-wrap">
+  <div class="how-header">How it works</div>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-n">01</div>
+      <div>
+        <div class="how-title">You pick your roles & cities</div>
+        <div class="how-desc">Choose from the presets or add your own keywords. Select as many locations as you want.</div>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-n">02</div>
+      <div>
+        <div class="how-title">We watch LinkedIn for you</div>
+        <div class="how-desc">Every 15 minutes, the system scans LinkedIn RSS feeds across all your selected cities and roles.</div>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-n">03</div>
+      <div>
+        <div class="how-title">You get an instant email</div>
+        <div class="how-desc">Only when something new appears — no repeats, no noise. Just fresh listings with direct links.</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <footer>
-  Built by SwavnaSahoo · Powered by LinkedIn RSS &amp; GitHub Actions · Free forever
+  <div class="footer-logo">JobPing</div>
+  <div class="footer-right">Built by Swavna Sahoo · Free forever · Open source on GitHub</div>
 </footer>
 
 <script>
-  // Tag toggles
-  document.querySelectorAll('.tag[data-role]').forEach(tag => {
-    tag.addEventListener('click', () => tag.classList.toggle('selected'));
-  });
-
-  document.querySelectorAll('.tag[data-loc]').forEach(tag => {
-    tag.addEventListener('click', () => tag.classList.toggle('selected'));
-  });
-
-  document.querySelectorAll('.freq-btn').forEach(btn => {
+  document.querySelectorAll('.tag[data-role]').forEach(t =>
+    t.addEventListener('click', () => t.classList.toggle('active')));
+  document.querySelectorAll('.tag[data-loc]').forEach(t =>
+    t.addEventListener('click', () => t.classList.toggle('active')));
+  document.querySelectorAll('.freq-btn').forEach(btn =>
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
-  });
+      document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }));
 
   function addCustomRole() {
     const input = document.getElementById('customRole');
     const val = input.value.trim();
     if (!val) return;
     const tag = document.createElement('div');
-    tag.className = 'tag selected';
+    tag.className = 'tag active';
     tag.dataset.role = val.toLowerCase();
     tag.textContent = val;
-    tag.addEventListener('click', () => tag.classList.toggle('selected'));
+    tag.addEventListener('click', () => tag.classList.toggle('active'));
     document.getElementById('roleGrid').appendChild(tag);
     input.value = '';
   }
@@ -677,33 +581,24 @@
   });
 
   function handleSubmit() {
-    const email = document.getElementById('emailInput').value.trim();
+    const emailInput = document.getElementById('emailInput');
+    const email = emailInput.value.trim();
     if (!email || !email.includes('@')) {
-      document.getElementById('emailInput').focus();
-      document.getElementById('emailInput').style.borderColor = 'rgba(252,129,129,0.5)';
-      setTimeout(() => document.getElementById('emailInput').style.borderColor = '', 1500);
+      emailInput.style.borderColor = '#e05c5c';
+      emailInput.focus();
+      setTimeout(() => emailInput.style.borderColor = '', 1500);
       return;
     }
-
-    const roles = [...document.querySelectorAll('.tag[data-role].selected')].map(t => t.dataset.role);
-    const locations = [...document.querySelectorAll('.tag[data-loc].selected')].map(t => ({ name: t.dataset.loc, id: t.dataset.id }));
-    const freq = document.querySelector('.freq-btn.selected')?.dataset.freq || '*/30 * * * *';
-
-    if (roles.length === 0 || locations.length === 0) return;
-
-    // POST to your backend
     fetch('/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, roles, locations, frequency: freq })
-    })
-    .then(r => r.ok ? showSuccess() : alert('Something went wrong. Please try again.'))
-    .catch(() => showSuccess()); // show success in demo mode too
-
-    showSuccess();
-  }
-
-  function showSuccess() {
+      body: JSON.stringify({
+        email,
+        roles: [...document.querySelectorAll('.tag[data-role].active')].map(t => t.dataset.role),
+        locations: [...document.querySelectorAll('.tag[data-loc].active')].map(t => ({ name: t.dataset.loc, id: t.dataset.id })),
+        frequency: document.querySelector('.freq-btn.active')?.dataset.freq
+      })
+    }).catch(() => {});
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('successCard').style.display = 'block';
   }
