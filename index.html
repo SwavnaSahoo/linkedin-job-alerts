@@ -479,6 +479,16 @@
       </div>
 
       <div class="form-block full">
+        <div class="form-block-label">Experience level</div>
+        <div class="tag-wrap" id="expGrid">
+          <div class="tag active" data-exp="1" data-label="Internship">Internship</div>
+          <div class="tag active" data-exp="2" data-label="Entry Level">Entry Level (0–1 yrs)</div>
+          <div class="tag active" data-exp="3" data-label="Associate">Associate (1–3 yrs)</div>
+          <div class="tag active" data-exp="4" data-label="Mid-Senior">Mid-Senior (3–5 yrs)</div>
+        </div>
+      </div>
+
+      <div class="form-block full">
         <div class="form-block-label">How often</div>
         <div class="freq-row">
           <div class="freq-btn active" data-freq="*/15 * * * *">Every 15 min</div>
@@ -554,6 +564,8 @@
 
 <script>
   document.querySelectorAll('.tag[data-role]').forEach(t =>
+    t.addEventListener('click', () => t.classList.toggle('active')));
+  document.querySelectorAll('.tag[data-exp]').forEach(t =>
     t.addEventListener('click', () => t.classList.toggle('active')));
   document.querySelectorAll('.tag[data-loc]').forEach(t =>
     t.addEventListener('click', () => t.classList.toggle('active')));
