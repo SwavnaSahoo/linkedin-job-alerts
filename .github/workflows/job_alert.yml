@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4 feedparser
       - name: Restore seen jobs cache
         uses: actions/cache@v4
         with:
