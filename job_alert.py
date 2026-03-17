@@ -264,6 +264,11 @@ def build_email_html(jobs):
         Runs every 15 minutes · Built by Swavna Sahoo<br>
         Powered by GitHub Actions
       </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0ede7;">
+        <a href="mailto:jobsandalotmore@gmail.com?subject=Unsubscribe me&body=Please remove me from JobPing alerts." style="font-size:11px;color:#c17f3e;text-decoration:none;border-bottom:1px solid #e8c99a;padding-bottom:1px;letter-spacing:0.04em;">Unsubscribe</a>
+        <span style="font-size:11px;color:#e8e4de;margin:0 8px;">·</span>
+        <span style="font-size:11px;color:#b5b0a8;font-weight:300;">You're receiving this because you signed up at jobping.</span>
+      </div>
     </div>
 
   </div>
