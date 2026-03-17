@@ -14,8 +14,6 @@ from pathlib import Path
 # CONFIGURATION
 # ─────────────────────────────────────────────
 
-# LinkedIn experience level codes for f_E parameter:
-# 1 = Internship, 2 = Entry level, 3 = Associate, 4 = Mid-Senior, 5 = Director, 6 = Executive
 EXPERIENCE_LEVELS = [
     ("1", "Internship"),
     ("2", "Entry Level"),
@@ -24,43 +22,36 @@ EXPERIENCE_LEVELS = [
 ]
 
 JOB_SEARCHES = [
-    # (keyword, location, location_label)
-    # Buffalo, NY
     ("data analyst", "Buffalo, New York, United States", "Buffalo, NY"),
     ("people analyst", "Buffalo, New York, United States", "Buffalo, NY"),
     ("product manager", "Buffalo, New York, United States", "Buffalo, NY"),
     ("business analytics", "Buffalo, New York, United States", "Buffalo, NY"),
     ("data analyst intern", "Buffalo, New York, United States", "Buffalo, NY"),
 
-    # Rochester, NY
     ("data analyst", "Rochester, New York, United States", "Rochester, NY"),
     ("people analyst", "Rochester, New York, United States", "Rochester, NY"),
     ("product manager", "Rochester, New York, United States", "Rochester, NY"),
     ("business analytics", "Rochester, New York, United States", "Rochester, NY"),
     ("data analyst intern", "Rochester, New York, United States", "Rochester, NY"),
 
-    # Atlanta, GA
     ("data analyst", "Atlanta, Georgia, United States", "Atlanta, GA"),
     ("people analyst", "Atlanta, Georgia, United States", "Atlanta, GA"),
     ("product manager", "Atlanta, Georgia, United States", "Atlanta, GA"),
     ("business analytics", "Atlanta, Georgia, United States", "Atlanta, GA"),
     ("data analyst intern", "Atlanta, Georgia, United States", "Atlanta, GA"),
 
-    # San Diego, CA
     ("data analyst", "San Diego, California, United States", "San Diego, CA"),
     ("people analyst", "San Diego, California, United States", "San Diego, CA"),
     ("product manager", "San Diego, California, United States", "San Diego, CA"),
     ("business analytics", "San Diego, California, United States", "San Diego, CA"),
     ("data analyst intern", "San Diego, California, United States", "San Diego, CA"),
 
-    # Puerto Rico
     ("data analyst", "Puerto Rico", "Puerto Rico"),
     ("people analyst", "Puerto Rico", "Puerto Rico"),
     ("product manager", "Puerto Rico", "Puerto Rico"),
     ("business analytics", "Puerto Rico", "Puerto Rico"),
     ("data analyst intern", "Puerto Rico", "Puerto Rico"),
 
-    # Washington DC
     ("data analyst", "Washington DC, United States", "Washington DC"),
     ("people analyst", "Washington DC, United States", "Washington DC"),
     ("product manager", "Washington DC, United States", "Washington DC"),
@@ -69,6 +60,7 @@ JOB_SEARCHES = [
 ]
 
 SEEN_JOBS_FILE = "seen_jobs.json"
+MAX_SEEN_JOBS = 2000  # cap to prevent cache bloat
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -80,7 +72,6 @@ HEADERS = {
     "Cache-Control": "max-age=0",
 }
 
-# Experience level badge colors in email
 LEVEL_COLORS = {
     "Internship":  {"bg": "#e8f4fb", "text": "#005f8a"},
     "Entry Level": {"bg": "#e6f9ee", "text": "#1a6e3c"},
@@ -99,12 +90,18 @@ def job_id(title, company, location, exp_level):
 def load_seen_jobs():
     if Path(SEEN_JOBS_FILE).exists():
         with open(SEEN_JOBS_FILE, "r") as f:
-            return set(json.load(f))
+            data = json.load(f)
+            print(f"[INFO] Cache size: {len(data)} entries")
+            return set(data)
     return set()
 
 def save_seen_jobs(seen):
+    seen_list = list(seen)
+    if len(seen_list) > MAX_SEEN_JOBS:
+        seen_list = seen_list[-MAX_SEEN_JOBS:]
+        print(f"[INFO] Cache trimmed to {MAX_SEEN_JOBS} entries")
     with open(SEEN_JOBS_FILE, "w") as f:
-        json.dump(list(seen), f)
+        json.dump(seen_list, f)
 
 # ─────────────────────────────────────────────
 # JOB FETCHING
@@ -136,9 +133,9 @@ def fetch_jobs_for_search(keyword, location, location_label, exp_code, exp_label
 
         for card in job_cards[:10]:
             try:
-                title_el  = card.find("h3")
+                title_el   = card.find("h3")
                 company_el = card.find("h4")
-                link_el   = card.find("a", href=True)
+                link_el    = card.find("a", href=True)
 
                 title   = title_el.get_text(strip=True)   if title_el   else "Unknown Title"
                 company = company_el.get_text(strip=True) if company_el else "Unknown Company"
@@ -176,7 +173,7 @@ def fetch_new_jobs(seen_jobs):
             if jobs:
                 print(f"[INFO] Found {len(jobs)} new '{exp_label}' jobs for '{keyword}' in {location_label}")
             all_new.extend(jobs)
-            time.sleep(1)
+            time.sleep(2)
     return all_new
 
 # ─────────────────────────────────────────────
@@ -218,7 +215,7 @@ def build_email_html(jobs):
 
         sections += f"""
         <div style="margin-bottom:36px;">
-          <div style="display:flex;align-items:center;margin-bottom:4px;">
+          <div style="margin-bottom:4px;">
             <span style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#b5b0a8;">location</span>
           </div>
           <div style="font-size:18px;font-weight:500;color:#1a1916;padding-bottom:10px;border-bottom:2px solid #1a1916;margin-bottom:0;">
@@ -236,7 +233,6 @@ def build_email_html(jobs):
 <body style="margin:0;padding:0;background:#faf9f6;">
   <div style="max-width:600px;margin:0 auto;padding:0;background:#faf9f6;">
 
-    <!-- Header -->
     <div style="padding:40px 40px 24px;border-bottom:1px solid #e8e4de;">
       <div style="font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#c17f3e;margin-bottom:16px;">JobPing by Swavna</div>
       <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:400;color:#1a1916;line-height:1.15;margin-bottom:8px;">
@@ -245,19 +241,16 @@ def build_email_html(jobs):
       <div style="font-size:12px;color:#b5b0a8;font-weight:300;margin-top:12px;">{now} · {time_str}</div>
     </div>
 
-    <!-- Meta strip -->
     <div style="padding:14px 40px;background:#f3f1ec;border-bottom:1px solid #e8e4de;">
       <span style="font-size:11px;color:#8c877e;font-weight:400;letter-spacing:0.02em;">
         Data Analyst &nbsp;·&nbsp; People Analyst &nbsp;·&nbsp; Product Manager &nbsp;·&nbsp; Business Analytics &nbsp;·&nbsp; Internships
       </span>
     </div>
 
-    <!-- Job sections -->
     <div style="padding:32px 40px;">
       {sections}
     </div>
 
-    <!-- Footer -->
     <div style="padding:24px 40px;border-top:1px solid #e8e4de;">
       <div style="font-family:'Playfair Display',Georgia,serif;font-size:14px;font-style:italic;color:#b5b0a8;margin-bottom:6px;">JobPing</div>
       <div style="font-size:11px;color:#b5b0a8;font-weight:300;line-height:1.7;">
@@ -267,7 +260,7 @@ def build_email_html(jobs):
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0ede7;">
         <a href="mailto:jobsandalotmore@gmail.com?subject=Unsubscribe me&body=Please remove me from JobPing alerts." style="font-size:11px;color:#c17f3e;text-decoration:none;border-bottom:1px solid #e8c99a;padding-bottom:1px;letter-spacing:0.04em;">Unsubscribe</a>
         <span style="font-size:11px;color:#e8e4de;margin:0 8px;">·</span>
-        <span style="font-size:11px;color:#b5b0a8;font-weight:300;">You're receiving this because you signed up at jobping.</span>
+        <span style="font-size:11px;color:#b5b0a8;font-weight:300;">You're receiving this because you signed up at JobPing.</span>
       </div>
     </div>
 
@@ -291,9 +284,9 @@ def send_email(jobs):
         f"Something good this way comes — {datetime.now().strftime('%b %d')}",
         f"Worth a look, Swavna — {datetime.now().strftime('%b %d')}",
     ]
-    # Rotate based on 15-min intervals since midnight
     interval = (datetime.now().hour * 60 + datetime.now().minute) // 15
     subject = subject_lines[interval % len(subject_lines)]
+
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"]    = sender
