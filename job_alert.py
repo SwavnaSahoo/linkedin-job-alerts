@@ -184,11 +184,11 @@ def fetch_new_jobs(seen_jobs):
 # ─────────────────────────────────────────────
 
 def exp_badge(exp_level):
-    colors = LEVEL_COLORS.get(exp_level, {"bg": "#f0f0f0", "text": "#555"})
+    colors = LEVEL_COLORS.get(exp_level, {"bg": "#f0ede7", "text": "#8c877e"})
     return (
-        f'<span style="display:inline-block;padding:2px 8px;border-radius:3px;'
+        f'<span style="display:inline-block;padding:2px 9px;border-radius:2px;'
         f'background:{colors["bg"]};color:{colors["text"]};'
-        f'font-size:11px;font-weight:600;margin-left:8px;">'
+        f'font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-left:10px;vertical-align:middle;">'
         f'{exp_level}</span>'
     )
 
@@ -198,49 +198,76 @@ def build_email_html(jobs):
         loc = job["location"]
         by_location.setdefault(loc, []).append(job)
 
-    now = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+    now = datetime.now().strftime("%B %d, %Y")
+    time_str = datetime.now().strftime("%I:%M %p")
     sections = ""
 
     for location, loc_jobs in sorted(by_location.items()):
-        job_cards = ""
+        job_rows = ""
         for job in loc_jobs:
             badge = exp_badge(job.get("exp_level", ""))
-            job_cards += f"""
-            <div style="background:#f9f9f9;border-left:4px solid #0077b5;padding:14px 16px;margin-bottom:12px;border-radius:4px;">
-              <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">
-                {job['title']}{badge}
+            job_rows += f"""
+            <div style="padding:18px 0;border-bottom:1px solid #e8e4de;">
+              <div style="margin-bottom:6px;">
+                <span style="font-size:15px;font-weight:500;color:#1a1916;">{job['title']}</span>{badge}
               </div>
-              <div style="font-size:13px;color:#555;margin-bottom:10px;">{job['company']} &nbsp;·&nbsp; {job['location']}</div>
-              <a href="{job['link']}" style="display:inline-block;background:#0077b5;color:#fff;text-decoration:none;padding:7px 16px;border-radius:4px;font-size:13px;font-weight:600;">View Job →</a>
+              <div style="font-size:13px;color:#8c877e;margin-bottom:10px;">{job['company']}</div>
+              <a href="{job['link']}" style="display:inline-block;font-size:12px;font-weight:500;color:#c17f3e;text-decoration:none;letter-spacing:0.04em;border-bottom:1px solid #e8c99a;padding-bottom:1px;">View listing →</a>
             </div>
             """
+
         sections += f"""
-        <div style="margin-bottom:30px;">
-          <h2 style="font-size:18px;color:#0077b5;border-bottom:2px solid #0077b5;padding-bottom:6px;margin-bottom:14px;">📍 {location} ({len(loc_jobs)} new)</h2>
-          {job_cards}
+        <div style="margin-bottom:36px;">
+          <div style="display:flex;align-items:center;margin-bottom:4px;">
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#b5b0a8;">location</span>
+          </div>
+          <div style="font-size:18px;font-weight:500;color:#1a1916;padding-bottom:10px;border-bottom:2px solid #1a1916;margin-bottom:0;">
+            {location}
+            <span style="font-size:12px;font-weight:400;color:#8c877e;margin-left:10px;">{len(loc_jobs)} new</span>
+          </div>
+          {job_rows}
         </div>
         """
 
-    return f"""
-    <!DOCTYPE html><html><head><meta charset="UTF-8"></head>
-    <body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;">
-      <div style="max-width:680px;margin:0 auto;padding:32px 24px;">
-        <div style="background:#0077b5;color:#fff;padding:24px 28px;border-radius:8px 8px 0 0;">
-          <div style="font-size:22px;font-weight:800;">🔔 LinkedIn Job Alert</div>
-          <div style="font-size:13px;opacity:0.85;margin-top:4px;">{now} · {len(jobs)} new listing{"s" if len(jobs)!=1 else ""}</div>
-        </div>
-        <div style="background:#e8f4fb;padding:12px 20px;font-size:13px;color:#005f8a;margin-bottom:28px;">
-          🎯 <strong>Data Analyst · People Analyst · Product Manager · Business Analytics · Internships</strong><br>
-          📌 Buffalo · Rochester · Atlanta · San Diego · Puerto Rico · Washington DC<br>
-          🏷️ Levels: <strong>Internship · Entry Level · Associate · Mid-Senior</strong>
-        </div>
-        {sections}
-        <div style="border-top:1px solid #e5e5e5;padding-top:18px;font-size:12px;color:#aaa;text-align:center;">
-          Auto-generated · Runs every 15 minutes · Powered by GitHub Actions
-        </div>
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background:#faf9f6;">
+  <div style="max-width:600px;margin:0 auto;padding:0;background:#faf9f6;">
+
+    <!-- Header -->
+    <div style="padding:40px 40px 24px;border-bottom:1px solid #e8e4de;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#c17f3e;margin-bottom:16px;">JobPing by Swavna</div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:400;color:#1a1916;line-height:1.15;margin-bottom:8px;">
+        {len(jobs)} new listing{"s" if len(jobs)!=1 else ""}<br><em style="font-style:italic;color:#c17f3e;">just dropped.</em>
       </div>
-    </body></html>
-    """
+      <div style="font-size:12px;color:#b5b0a8;font-weight:300;margin-top:12px;">{now} · {time_str}</div>
+    </div>
+
+    <!-- Meta strip -->
+    <div style="padding:14px 40px;background:#f3f1ec;border-bottom:1px solid #e8e4de;">
+      <span style="font-size:11px;color:#8c877e;font-weight:400;letter-spacing:0.02em;">
+        Data Analyst &nbsp;·&nbsp; People Analyst &nbsp;·&nbsp; Product Manager &nbsp;·&nbsp; Business Analytics &nbsp;·&nbsp; Internships
+      </span>
+    </div>
+
+    <!-- Job sections -->
+    <div style="padding:32px 40px;">
+      {sections}
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:24px 40px;border-top:1px solid #e8e4de;">
+      <div style="font-family:'Playfair Display',Georgia,serif;font-size:14px;font-style:italic;color:#b5b0a8;margin-bottom:6px;">JobPing</div>
+      <div style="font-size:11px;color:#b5b0a8;font-weight:300;line-height:1.7;">
+        Runs every 15 minutes · Built by Swavna Sahoo<br>
+        Powered by GitHub Actions
+      </div>
+    </div>
+
+  </div>
+</body></html>"""
 
 def send_email(jobs):
     sender    = os.environ["EMAIL_SENDER"]
