@@ -408,7 +408,7 @@ def send_email(jobs):
         f"New doors, just opened — {datetime.now().strftime('%b %d')}",
         f"The search continues, beautifully — {datetime.now().strftime('%b %d')}",
         f"Something good this way comes — {datetime.now().strftime('%b %d')}",
-        f"Worth a look, Swavna — {datetime.now().strftime('%b %d')}",
+        f"Don't sleep on these — {datetime.now().strftime('%b %d')}",
     ]
     interval = (datetime.now().hour * 60 + datetime.now().minute) // 15
     subject = subject_lines[interval % len(subject_lines)]
