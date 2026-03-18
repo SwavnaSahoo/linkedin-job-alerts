@@ -381,7 +381,8 @@ def build_email_html(jobs):
       <div style="font-family:'Playfair Display',Georgia,serif;font-size:14px;font-style:italic;color:#b5b0a8;margin-bottom:6px;">JobPing</div>
       <div style="font-size:11px;color:#b5b0a8;font-weight:300;line-height:1.7;">
         Runs every 15 minutes · Built by Swavna Sahoo<br>
-        Sources: LinkedIn · Indeed · ZipRecruiter
+        Sources: LinkedIn · Indeed · ZipRecruiter<br>
+        <a href="https://swavnasahoo.github.io/linkedin-job-alerts" style="color:#c17f3e;text-decoration:none;border-bottom:1px solid #e8c99a;">Visit JobPing →</a>
       </div>
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0ede7;">
         <a href="mailto:jobsandalotmore@gmail.com?subject=Unsubscribe me&body=Please remove me from JobPing alerts." style="font-size:11px;color:#c17f3e;text-decoration:none;border-bottom:1px solid #e8c99a;padding-bottom:1px;letter-spacing:0.04em;">Unsubscribe</a>
