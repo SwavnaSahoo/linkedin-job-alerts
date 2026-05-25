@@ -121,7 +121,10 @@ JOB_SEARCHES = [
 - Just push a small change or manually trigger via the Actions tab
 
 ---
-
+echo "" >> README.md
+git add README.md
+git commit -m "chore: keepalive"
+git push
 ## Notes
 
 - This uses LinkedIn's **public RSS feeds** — no API key or LinkedIn account required
